@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ResumeForge – Free Professional Resume Builder</title>
+<meta name="description" content="Build a professional resume for free in minutes. Choose from multiple templates, download as PDF, and land your dream job with ResumeForge."/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1610185770083188" crossorigin="anonymous"></script>
+<style>
+  :root {
+    --bg: #0e0f13;
+    --surface: #16181f;
+    --surface2: #1e2029;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --gold: #c9a84c;
+    --gold2: #f0d080;
+    --text: #f0ede6;
+    --muted: #8a8a9a;
+    --accent: #4f7cff;
+    --success: #3ecf7a;
+    --radius: 12px;
+    --shadow: 0 4px 32px rgba(0,0,0,0.45);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px; position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--gold); letter-spacing: -0.5px; }
+  .logo span { color: var(--text); }
+  .header-btns { display: flex; gap: 10px; align-items: center; }
+  .nav-links { display: flex; gap: 16px; margin-right: 12px; }
+  .nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color .2s; }
+  .nav-links a:hover { color: var(--gold); }
+  .btn { padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; transition: all .2s; }
+  .btn-outline { background: transparent; border: 1px solid var(--border2); color: var(--text); }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-gold { background: var(--gold); color: #0e0f13; }
+  .btn-gold:hover { background: var(--gold2); transform: translateY(-1px); }
+
+  /* ── LAYOUT ── */
+  .app { display: grid; grid-template-columns: 320px 1fr 280px; min-height: calc(100vh - 60px); }
+
+  /* ── LEFT SIDEBAR ── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    overflow-y: auto; padding: 1.5rem 1.25rem;
+    display: flex; flex-direction: column; gap: 0;
+  }
+  .section-tab {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 8px; cursor: pointer;
+    font-size: 13px; font-weight: 500; color: var(--muted);
+    transition: all .2s; margin-bottom: 2px; border: none;
+    background: transparent; width: 100%; text-align: left;
+  }
+  .section-tab.active { background: rgba(201,168,76,0.12); color: var(--gold); }
+  .section-tab:hover:not(.active) { background: var(--surface2); color: var(--text); }
+  .section-tab .tab-icon { font-size: 16px; width: 20px; text-align:center; }
+  .sidebar-divider { height: 1px; background: var(--border); margin: 10px 0; }
+
+  /* ── FORM PANELS ── */
+  .form-panel { display: none; flex-direction: column; gap: 12px; }
+  .form-panel.active { display: flex; }
+  .panel-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--gold); margin-bottom: 4px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 12px; color: var(--muted); font-weight: 500; letter-spacing: 0.3px; }
+  .field input, .field textarea, .field select {
+    background: var(--surface2); border: 1px solid var(--border2);
+    border-radius: 8px; padding: 9px 11px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    transition: border-color .2s; outline: none; resize: vertical;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus { border-color: var(--gold); }
+  .field select option { background: #1e2029; }
+  .field textarea { min-height: 70px; }
+
+  .skills-input-row { display: flex; gap: 8px; }
+  .skills-input-row input { flex: 1; }
+  .skills-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .chip {
+    background: rgba(201,168,76,0.15); border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold); font-size: 12px; padding: 4px 10px; border-radius: 999px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .chip .del { cursor: pointer; color: var(--muted); font-size: 14px; line-height:1; }
+  .chip .del:hover { color: #ff6b6b; }
+
+  .entry-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px; display: flex; flex-direction: column; gap: 10px;
+    position: relative;
+  }
+  .entry-card .remove-btn {
+    position: absolute; top: 10px; right: 10px;
+    background: transparent; border: none; color: var(--muted);
+    cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: 6px;
+  }
+  .entry-card .remove-btn:hover { color: #ff6b6b; background: rgba(255,107,107,0.1); }
+  .add-btn {
+    background: transparent; border: 1px dashed var(--border2);
+    color: var(--muted); border-radius: 8px; padding: 9px;
+    cursor: pointer; font-size: 13px; transition: all .2s; font-family: 'DM Sans', sans-serif;
+  }
+  .add-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.05); }
+
+  .color-options { display: flex; gap: 8px; flex-wrap: wrap; }
+  .color-dot {
+    width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+    border: 3px solid transparent; transition: all .2s;
+  }
+  .color-dot.selected { border-color: #fff; transform: scale(1.15); }
+
+  /* ── CENTER – PREVIEW ── */
+  .preview-area {
+    background: #888; display: flex; flex-direction: column;
+    align-items: center; padding: 2rem 1rem; overflow-y: auto;
+    background: repeating-linear-gradient(45deg, #1a1c24 0, #1a1c24 10px, #1e2029 10px, #1e2029 20px);
+  }
+  .preview-wrap { width: 794px; max-width: 100%; }
+  #resume-preview {
+    background: #fff; width: 794px; min-height: 1123px;
+    box-shadow: var(--shadow); font-family: 'DM Sans', sans-serif;
+    color: #1a1a2e; overflow: hidden; position: relative;
+  }
+
+  /* TEMPLATE: Classic */
+  .tpl-classic .resume-header { padding: 36px 40px 28px; background: var(--tpl-accent, #1a2e4a); color: #fff; }
+  .tpl-classic .resume-header h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 4px; font-family: 'Playfair Display', serif; }
+
+  /* ── RIGHT PANEL ── */
+  .right-panel {
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    padding: 1.25rem; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 1rem;
+  }
+  .rp-title { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 6px; }
+
+  .template-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tpl-thumb {
+    border: 2px solid var(--border); border-radius: 8px; overflow: hidden;
+    cursor: pointer; transition: border-color .2s; aspect-ratio: .707;
+    display: flex; align-items: center; justify-content: center;
+    background: #fff; position: relative;
+  }
+  .tpl-thumb:hover, .tpl-thumb.selected { border-color: var(--gold); }
+  .tpl-name { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: #fff; font-size: 10px; text-align: center; padding: 4px; }
+
+  .progress-bar-bg { height: 4px; background: var(--surface2); border-radius: 2px; }
+  .progress-bar-fill { height: 100%; border-radius: 2px; background: var(--gold); transition: width .4s; }
+  .form-area { padding: 1.25rem 0 0; flex: 1; display: flex; flex-direction: column; gap: 12px; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--success); color: #fff; padding: 10px 24px;
+    border-radius: 999px; font-size: 14px; font-weight: 500;
+    opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 999;
+    box-shadow: 0 4px 20px rgba(62,207,122,0.3);
+  }
+  .toast.show { opacity: 1; }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+
+  /* ── MOBILE TABS ── */
+  .mobile-tabs {
+    display: none;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 60px; z-index: 90;
+  }
+  .mobile-tab-btn {
+    flex: 1; padding: 12px 8px; border: none; background: transparent;
+    color: var(--muted); font-family: 'DM Sans', sans-serif; font-size: 13px;
+    font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent;
+    transition: all .2s;
+  }
+  .mobile-tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    .mobile-tabs { display: flex; }
+    .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+    .right-panel { border-left: none; border-top: 1px solid var(--border); }
+
+    /* hide panels by default, show active */
+    .sidebar   { display: none; }
+    .preview-area { display: none; }
+    .right-panel  { display: none; }
+
+    .sidebar.mobile-active   { display: flex; }
+    .preview-area.mobile-active { display: flex; }
+    .right-panel.mobile-active  { display: flex; }
+
+    /* scale resume preview to fit screen */
+    .preview-wrap { width: 100%; overflow-x: auto; }
+    #resume-preview { width: 794px; transform-origin: top left; }
+    .preview-area { padding: 1rem 0.5rem; align-items: flex-start; }
+
+    /* header on mobile */
+    header { padding: 0 1rem; }
+    .nav-links { display: none; }
+  }
+
+  @media (max-width: 480px) {
+    .header-btns .btn-outline { display: none; }
+  }
+
+  @media print {
+    body { background: #fff; }
+    header, .sidebar, .right-panel, .preview-area > *:not(.preview-wrap), .mobile-tabs { display: none; }
+    .app { display: block; }
+    .preview-area { background: none; padding: 0; display: block !important; }
+    .preview-wrap { width: 100%; }
+    #resume-preview { box-shadow: none; width: 100%; min-height: auto; transform: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast">✓ Resume downloaded!</div>
+
+<header>
+  <div class="logo">Resume<span>Forge</span></div>
+  <div style="font-size:12px; color:var(--muted); display:flex; align-items:center; gap:8px;">
+    <span id="autosave-label">Auto-saved</span>
+  </div>
+  <div class="header-btns">
+    <nav class="nav-links">
+      <a href="about.html">About</a>
+      <a href="blog.html">Blog</a>
+      <a href="contact.html">Contact</a>
+      <a href="privacy.html">Privacy</a>
+    </nav>
+    <button class="btn btn-outline" onclick="window.print()">🖨 Print</button>
+    <button class="btn btn-gold" onclick="downloadPDF()">⬇ Download PDF</button>
+  </div>
+</header>
+
+<!-- MOBILE TABS -->
+<div class="mobile-tabs" id="mobile-tabs">
+  <button class="mobile-tab-btn active" onclick="switchMobileTab('form', this)">✍️ Form</button>
+  <button class="mobile-tab-btn" onclick="switchMobileTab('preview', this)">👁 Preview</button>
+  <button class="mobile-tab-btn" onclick="switchMobileTab('templates', this)">🎨 Style</button>
+</div>
+
+<div class="app">
+
+  <!-- LEFT: Form Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div style="margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <span style="font-size:12px; color:var(--muted); font-weight:600;">PROFILE STRENGTH</span>
+        <span style="font-size:12px; color:var(--gold); font-weight:600;" id="prog-pct">0%</span>
+      </div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+
+    <button class="section-tab active" onclick="switchTab('personal',this)"><span class="tab-icon">👤</span> Personal Info</button>
+    <button class="section-tab" onclick="switchTab('summary',this)"><span class="tab-icon">✍️</span> Summary</button>
+    <button class="section-tab" onclick="switchTab('experience',this)"><span class="tab-icon">💼</span> Experience</button>
+    <button class="section-tab" onclick="switchTab('education',this)"><span class="tab-icon">🎓</span> Education</button>
+    <button class="section-tab" onclick="switchTab('skills',this)"><span class="tab-icon">⚡</span> Skills</button>
+    <button class="section-tab" onclick="switchTab('projects',this)"><span class="tab-icon">🚀</span> Projects</button>
+    <button class="section-tab" onclick="switchTab('languages',this)"><span class="tab-icon">🌍</span> Languages</button>
+    <button class="section-tab" onclick="switchTab('certifications',this)"><span class="tab-icon">🏆</span> Certifications</button>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="form-area">
+      <div class="form-panel active" id="panel-personal">
+        <div class="panel-title">Personal Info</div>
+        <div class="form-row">
+          <div class="field"><label>First Name *</label><input id="f-fname" placeholder="Rohan" oninput="render()"/></div>
+          <div class="field"><label>Last Name *</label><input id="f-lname" placeholder="Mehta" oninput="render()"/></div>
+        </div>
+        <div class="field"><label>Job Title / Role</label><input id="f-title" placeholder="Senior Software Engineer" oninput="render()"/></div>
+        <div class="form-row">
+          <div class="field"><label>Email</label><input id="f-email" type="email" placeholder="rohan@email.com" oninput="render()"/></div>
+          <div class="field"><label>Phone</label><input id="f-phone" placeholder="+91 98765 43210" oninput="render()"/></div>
+        </div>
+        <div class="form-row">
+          <div class="field"><label>City</label><input id="f-city" placeholder="Vadodara" oninput="render()"/></div>
+          <div class="field"><label>State / Country</label><input id="f-country" placeholder="Gujarat, India" oninput="render()"/></div>
+        </div>
+        <div class="field"><label>LinkedIn URL</label><input id="f-linkedin" placeholder="linkedin.com/in/rohanmehta" oninput="render()"/></div>
+        <div class="field"><label>Portfolio / Website</label><input id="f-website" placeholder="rohanmehta.dev" oninput="render()"/></div>
+      </div>
+
+      <div class="form-panel" id="panel-summary">
+        <div class="panel-title">Professional Summary</div>
+        <div class="field">
+          <label>Write 3–4 sentences about yourself</label>
+          <textarea id="f-summary" rows="6" placeholder="Passionate software engineer with 5+ years of experience..." oninput="render()"></textarea>
+        </div>
+        <div style="font-size:12px; color:var(--muted);">💡 Tip: Mention your years of experience, top skills, and 1 key achievement.</div>
+      </div>
+
+      <div class="form-panel" id="panel-experience">
+        <div class="panel-title">Work Experience</div>
+        <div id="exp-list"></div>
+        <button class="add-btn" onclick="addExperience()">+ Add Experience</button>
+      </div>
+
+      <div class="form-panel" id="panel-education">
+        <div class="panel-title">Education</div>
+        <div id="edu-list"></div>
+        <button class="add-btn" onclick="addEducation()">+ Add Education</button>
+      </div>
+
+      <div class="form-panel" id="panel-skills">
+        <div class="panel-title">Skills</div>
+        <div class="field">
+          <label>Add a skill and press Enter</label>
+          <div class="skills-input-row">
+            <input id="skill-input" placeholder="e.g. React.js" onkeydown="if(event.key==='Enter'){addSkill();event.preventDefault()}"/>
+            <button class="btn btn-outline" style="padding:8px 14px;" onclick="addSkill()">Add</button>
+          </div>
+        </div>
+        <div class="skills-chips" id="skills-chips"></div>
+        <div style="font-size:12px; color:var(--muted); margin-top:4px;">💡 Add 8–12 relevant skills for best results.</div>
+      </div>
+
+      <div class="form-panel" id="panel-projects">
+        <div class="panel-title">Projects</div>
+        <div id="proj-list"></div>
+        <button class="add-btn" onclick="addProject()">+ Add Project</button>
+      </div>
+
+      <div class="form-panel" id="panel-languages">
+        <div class="panel-title">Languages</div>
+        <div id="lang-list"></div>
+        <button class="add-btn" onclick="addLanguage()">+ Add Language</button>
+      </div>
+
+      <div class="form-panel" id="panel-certifications">
+        <div class="panel-title">Certifications</div>
+        <div id="cert-list"></div>
+        <button class="add-btn" onclick="addCertification()">+ Add Certification</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CENTER: Resume Preview -->
+  <main class="preview-area">
+    <div class="preview-wrap">
+      <div id="resume-preview" class="tpl-classic"></div>
+    </div>
+  </main>
+
+  <!-- RIGHT: Templates + Ads -->
+  <aside class="right-panel">
+
+    <!-- AD SLOT TOP -->
+    <div>
+      <div class="rp-title">Advertisement</div>
+      <ins class="adsbygoogle"
+           style="display:block;min-height:90px;"
+           data-ad-client="ca-pub-1610185770083188"
+           data-ad-slot="auto"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
+    <!-- TEMPLATES -->
+    <div>
+      <div class="rp-title">Templates</div>
+      <div class="template-grid">
+        <div class="tpl-thumb selected" onclick="selectTemplate('classic',this)">
+          <svg viewBox="0 0 80 113" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+            <rect width="80" height="113" fill="#fff"/>
+            <rect width="80" height="28" fill="#1a2e4a"/>
+            <rect x="8" y="8" width="40" height="5" rx="1" fill="rgba(255,255,255,0.9)"/>
+            <rect x="8" y="16" width="25" height="3" rx="1" fill="rgba(255,255,255,0.5)"/>
+            <rect x="8" y="34" width="20" height="2" rx="1" fill="#1a2e4a"/>
+            <rect x="8" y="40" width="42" height="2" rx="1" fill="#ccc"/>
+            <rect x="8" y="44" width="38" height="2" rx="1" fill="#ccc"/>
+          </svg>
+          <div class="tpl-name">Classic</div>
+        </div>
+        <div class="tpl-thumb" onclick="selectTemplate('modern',this)">
+          <svg viewBox="0 0 80 113" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+            <rect width="80" height="113" fill="#fff"/>
+            <rect width="22" height="113" fill="#f0f0f0"/>
+            <rect x="2" y="10" width="18" height="18" rx="9" fill="#ccc"/>
+            <rect x="28" y="8" width="35" height="5" rx="1" fill="#333"/>
+            <rect x="28" y="16" width="22" height="2" rx="1" fill="#999"/>
+          </svg>
+          <div class="tpl-name">Modern</div>
+        </div>
+        <div class="tpl-thumb" onclick="selectTemplate('minimal',this)">
+          <svg viewBox="0 0 80 113" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+            <rect width="80" height="113" fill="#fff"/>
+            <rect x="8" y="8" width="40" height="6" rx="1" fill="#111"/>
+            <rect x="8" y="17" width="25" height="2" rx="1" fill="#888"/>
+            <rect x="8" y="22" width="60" height="0.5" fill="#ddd"/>
+            <rect x="8" y="28" width="55" height="2" rx="1" fill="#ccc"/>
+          </svg>
+          <div class="tpl-name">Minimal</div>
+        </div>
+        <div class="tpl-thumb" onclick="selectTemplate('bold',this)">
+          <svg viewBox="0 0 80 113" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+            <rect width="80" height="113" fill="#fff"/>
+            <rect x="0" y="0" width="6" height="113" fill="#4f7cff"/>
+            <rect x="12" y="8" width="50" height="7" rx="1" fill="#111"/>
+            <rect x="12" y="18" width="30" height="3" rx="1" fill="#888"/>
+          </svg>
+          <div class="tpl-name">Bold</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACCENT COLOR -->
+    <div>
+      <div class="rp-title">Accent Color</div>
+      <div class="color-options" id="color-options">
+        <div class="color-dot selected" style="background:#1a2e4a" data-color="#1a2e4a" onclick="setColor(this)"></div>
+        <div class="color-dot" style="background:#4f7cff" data-color="#4f7cff" onclick="setColor(this)"></div>
+        <div class="color-dot" style="background:#c0392b" data-color="#c0392b" onclick="setColor(this)"></div>
+        <div class="color-dot" style="background:#1a7a4a" data-color="#1a7a4a" onclick="setColor(this)"></div>
+        <div class="color-dot" style="background:#7b3fa0" data-color="#7b3fa0" onclick="setColor(this)"></div>
+        <div class="color-dot" style="background:#c9a84c" data-color="#c9a84c" onclick="setColor(this)"></div>
+        <div class="color-dot" style="background:#1a5f7a" data-color="#1a5f7a" onclick="setColor(this)"></div>
+        <div class="color-dot" style="background:#111" data-color="#111" onclick="setColor(this)"></div>
+      </div>
+    </div>
+
+    <!-- FONT SIZE -->
+    <div>
+      <div class="rp-title">Font Size</div>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-outline" onclick="changeFontSize(-1)" style="flex:1">A−</button>
+        <button class="btn btn-outline" onclick="changeFontSize(1)" style="flex:1">A+</button>
+      </div>
+    </div>
+
+    <!-- AD SLOT MIDDLE -->
+    <div>
+      <div class="rp-title">Advertisement</div>
+      <ins class="adsbygoogle"
+           style="display:block;min-height:250px;"
+           data-ad-client="ca-pub-1610185770083188"
+           data-ad-slot="auto"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
+    <!-- TIPS -->
+    <div style="background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:14px;">
+      <div class="rp-title" style="margin-bottom:8px;">✨ Pro Tips</div>
+      <ul style="font-size:12px; color:var(--muted); line-height:1.8; padding-left:14px;">
+        <li>Keep resume to 1 page if under 10 yrs exp</li>
+        <li>Use action verbs: Built, Led, Increased…</li>
+        <li>Quantify achievements with numbers</li>
+        <li>Tailor keywords from the job description</li>
+        <li>Proofread — typos cost interviews!</li>
+      </ul>
+    </div>
+
+    <!-- AD SLOT BOTTOM -->
+    <div>
+      <div class="rp-title">Advertisement</div>
+      <ins class="adsbygoogle"
+           style="display:block;min-height:90px;"
+           data-ad-client="ca-pub-1610185770083188"
+           data-ad-slot="auto"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+
+  </aside>
+</div>
+
+<script>
+const state = {
+  fname:'', lname:'', title:'', email:'', phone:'',
+  city:'', country:'', linkedin:'', website:'', summary:'',
+  experience:[], education:[], skills:[], projects:[],
+  languages:[], certifications:[],
+  template:'classic', color:'#1a2e4a', fontSize: 13
+};
+let expCount=0, eduCount=0, projCount=0, langCount=0, certCount=0;
+
+function switchTab(id, el) {
+  document.querySelectorAll('.section-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.form-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-'+id).classList.add('active');
+}
+
+function addExperience() {
+  const id = ++expCount;
+  state.experience.push({id, company:'', role:'', start:'', end:'', desc:''});
+  renderExpList(); render();
+}
+function removeExperience(id) {
+  state.experience = state.experience.filter(e=>e.id!==id);
+  renderExpList(); render();
+}
+function renderExpList() {
+  const c = document.getElementById('exp-list');
+  c.innerHTML = '';
+  state.experience.forEach((e,i)=>{
+    const d = document.createElement('div');
+    d.className='entry-card'; d.style.marginBottom='12px';
+    d.innerHTML=`
+      <button class="remove-btn" onclick="removeExperience(${e.id})">✕</button>
+      <div class="form-row">
+        <div class="field"><label>Job Title *</label><input value="${e.role}" placeholder="Software Engineer" oninput="state.experience[${i}].role=this.value;render()"/></div>
+        <div class="field"><label>Company *</label><input value="${e.company}" placeholder="Google" oninput="state.experience[${i}].company=this.value;render()"/></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Start Date</label><input value="${e.start}" placeholder="Jan 2021" oninput="state.experience[${i}].start=this.value;render()"/></div>
+        <div class="field"><label>End Date</label><input value="${e.end}" placeholder="Present" oninput="state.experience[${i}].end=this.value;render()"/></div>
+      </div>
+      <div class="field"><label>Achievements / Responsibilities</label><textarea rows="3" placeholder="• Built X that increased Y by Z%..." oninput="state.experience[${i}].desc=this.value;render()">${e.desc}</textarea></div>`;
+    c.appendChild(d);
+  });
+}
+
+function addEducation() {
+  const id = ++eduCount;
+  state.education.push({id, school:'', degree:'', field:'', start:'', end:'', gpa:''});
+  renderEduList(); render();
+}
+function removeEducation(id) {
+  state.education = state.education.filter(e=>e.id!==id);
+  renderEduList(); render();
+}
+function renderEduList() {
+  const c = document.getElementById('edu-list'); c.innerHTML='';
+  state.education.forEach((e,i)=>{
+    const d=document.createElement('div'); d.className='entry-card'; d.style.marginBottom='12px';
+    d.innerHTML=`
+      <button class="remove-btn" onclick="removeEducation(${e.id})">✕</button>
+      <div class="field"><label>School / University *</label><input value="${e.school}" placeholder="IIT Bombay" oninput="state.education[${i}].school=this.value;render()"/></div>
+      <div class="form-row">
+        <div class="field"><label>Degree</label><input value="${e.degree}" placeholder="B.Tech" oninput="state.education[${i}].degree=this.value;render()"/></div>
+        <div class="field"><label>Field of Study</label><input value="${e.field}" placeholder="Computer Science" oninput="state.education[${i}].field=this.value;render()"/></div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label>Start Year</label><input value="${e.start}" placeholder="2018" oninput="state.education[${i}].start=this.value;render()"/></div>
+        <div class="field"><label>End Year</label><input value="${e.end}" placeholder="2022" oninput="state.education[${i}].end=this.value;render()"/></div>
+      </div>
+      <div class="field"><label>CGPA / Score (optional)</label><input value="${e.gpa}" placeholder="8.5/10" oninput="state.education[${i}].gpa=this.value;render()"/></div>`;
+    c.appendChild(d);
+  });
+}
+
+function addSkill() {
+  const inp = document.getElementById('skill-input');
+  const val = inp.value.trim();
+  if(!val || state.skills.includes(val)) return;
+  state.skills.push(val); inp.value='';
+  renderSkillChips(); render();
+}
+function removeSkill(s) {
+  state.skills = state.skills.filter(x=>x!==s);
+  renderSkillChips(); render();
+}
+function renderSkillChips() {
+  const c = document.getElementById('skills-chips');
+  c.innerHTML = state.skills.map(s=>`<div class="chip">${s} <span class="del" onclick="removeSkill('${s}')">×</span></div>`).join('');
+}
+
+function addProject() {
+  const id=++projCount;
+  state.projects.push({id, name:'', url:'', desc:''});
+  renderProjList(); render();
+}
+function removeProject(id) {
+  state.projects=state.projects.filter(p=>p.id!==id);
+  renderProjList(); render();
+}
+function renderProjList() {
+  const c=document.getElementById('proj-list'); c.innerHTML='';
+  state.projects.forEach((p,i)=>{
+    const d=document.createElement('div'); d.className='entry-card'; d.style.marginBottom='12px';
+    d.innerHTML=`
+      <button class="remove-btn" onclick="removeProject(${p.id})">✕</button>
+      <div class="field"><label>Project Name *</label><input value="${p.name}" placeholder="E-commerce App" oninput="state.projects[${i}].name=this.value;render()"/></div>
+      <div class="field"><label>URL / GitHub</label><input value="${p.url}" placeholder="github.com/username/project" oninput="state.projects[${i}].url=this.value;render()"/></div>
+      <div class="field"><label>Description</label><textarea rows="2" placeholder="Built with React + Node.js..." oninput="state.projects[${i}].desc=this.value;render()">${p.desc}</textarea></div>`;
+    c.appendChild(d);
+  });
+}
+
+function addLanguage() {
+  const id=++langCount;
+  state.languages.push({id, name:'', level:'Native'});
+  renderLangList(); render();
+}
+function removeLanguage(id) {
+  state.languages=state.languages.filter(l=>l.id!==id);
+  renderLangList(); render();
+}
+function renderLangList() {
+  const c=document.getElementById('lang-list'); c.innerHTML='';
+  state.languages.forEach((l,i)=>{
+    const d=document.createElement('div'); d.className='entry-card'; d.style.marginBottom='10px';
+    d.innerHTML=`
+      <button class="remove-btn" onclick="removeLanguage(${l.id})">✕</button>
+      <div class="form-row">
+        <div class="field"><label>Language</label><input value="${l.name}" placeholder="Hindi" oninput="state.languages[${i}].name=this.value;render()"/></div>
+        <div class="field"><label>Proficiency</label>
+          <select onchange="state.languages[${i}].level=this.value;render()">
+            ${['Native','Fluent','Advanced','Intermediate','Basic'].map(v=>`<option ${l.level===v?'selected':''}>${v}</option>`).join('')}
+          </select>
+        </div>
+      </div>`;
+    c.appendChild(d);
+  });
+}
+
+function addCertification() {
+  const id=++certCount;
+  state.certifications.push({id, name:'', issuer:'', year:''});
+  renderCertList(); render();
+}
+function removeCertification(id) {
+  state.certifications=state.certifications.filter(c=>c.id!==id);
+  renderCertList(); render();
+}
+function renderCertList() {
+  const c=document.getElementById('cert-list'); c.innerHTML='';
+  state.certifications.forEach((cert,i)=>{
+    const d=document.createElement('div'); d.className='entry-card'; d.style.marginBottom='10px';
+    d.innerHTML=`
+      <button class="remove-btn" onclick="removeCertification(${cert.id})">✕</button>
+      <div class="field"><label>Certification Name</label><input value="${cert.name}" placeholder="AWS Certified Developer" oninput="state.certifications[${i}].name=this.value;render()"/></div>
+      <div class="form-row">
+        <div class="field"><label>Issuer</label><input value="${cert.issuer}" placeholder="Amazon Web Services" oninput="state.certifications[${i}].issuer=this.value;render()"/></div>
+        <div class="field"><label>Year</label><input value="${cert.year}" placeholder="2024" oninput="state.certifications[${i}].year=this.value;render()"/></div>
+      </div>`;
+    c.appendChild(d);
+  });
+}
+
+function selectTemplate(tpl, el) {
+  state.template = tpl;
+  document.querySelectorAll('.tpl-thumb').forEach(t=>t.classList.remove('selected'));
+  el.classList.add('selected');
+  render();
+}
+function setColor(el) {
+  state.color = el.dataset.color;
+  document.querySelectorAll('.color-dot').forEach(d=>d.classList.remove('selected'));
+  el.classList.add('selected');
+  render();
+}
+function changeFontSize(delta) {
+  state.fontSize = Math.min(16, Math.max(10, state.fontSize + delta));
+  render();
+}
+
+function readForm() {
+  const g = id => document.getElementById(id)?.value || '';
+  state.fname = g('f-fname'); state.lname = g('f-lname');
+  state.title = g('f-title'); state.email = g('f-email');
+  state.phone = g('f-phone'); state.city = g('f-city');
+  state.country = g('f-country'); state.linkedin = g('f-linkedin');
+  state.website = g('f-website'); state.summary = g('f-summary');
+}
+
+function updateProgress() {
+  let score = 0;
+  if(state.fname) score+=10; if(state.email) score+=10; if(state.phone) score+=5;
+  if(state.title) score+=5; if(state.summary) score+=15;
+  if(state.experience.length) score+=20; if(state.education.length) score+=15;
+  if(state.skills.length>=3) score+=15; if(state.projects.length) score+=5;
+  score = Math.min(100, score);
+  document.getElementById('prog-fill').style.width = score+'%';
+  document.getElementById('prog-pct').textContent = score+'%';
+}
+
+function escHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function render() {
+  readForm();
+  updateProgress();
+  const tpl = state.template;
+  const el = document.getElementById('resume-preview');
+  el.className = 'tpl-'+tpl;
+  el.style.fontSize = state.fontSize+'px';
+  el.style.setProperty('--tpl-accent', state.color);
+
+  const fullName = (state.fname+' '+state.lname).trim() || 'Your Name';
+  const contacts = [
+    state.email ? `<span style="display:flex;align-items:center;gap:4px;">✉ ${escHtml(state.email)}</span>` : '',
+    state.phone ? `<span style="display:flex;align-items:center;gap:4px;">📞 ${escHtml(state.phone)}</span>` : '',
+    (state.city||state.country) ? `<span style="display:flex;align-items:center;gap:4px;">📍 ${escHtml([state.city,state.country].filter(Boolean).join(', '))}</span>` : '',
+    state.linkedin ? `<span style="display:flex;align-items:center;gap:4px;">🔗 ${escHtml(state.linkedin)}</span>` : '',
+    state.website ? `<span style="display:flex;align-items:center;gap:4px;">🌐 ${escHtml(state.website)}</span>` : ''
+  ].filter(Boolean).join('');
+
+  if(tpl === 'minimal') {
+    el.innerHTML = buildMinimalHTML(fullName, contacts);
+  } else {
+    el.innerHTML = buildClassicHTML(fullName, contacts, tpl);
+  }
+
+  document.getElementById('autosave-label').textContent = 'Saved ✓';
+  setTimeout(()=>document.getElementById('autosave-label').textContent='Auto-saved',1500);
+}
+
+function buildClassicHTML(fullName, contacts, tpl) {
+  const accent = state.color;
+  let headerStyle = `background:${accent}; color:#fff; padding:32px 40px 24px;`;
+  let sideStyle = 'background:#f7f7f7; border-left:1px solid #e8e8e8;';
+  let accentBar = '';
+
+  if(tpl === 'bold') {
+    headerStyle = `background:#fff; color:#111; padding:32px 40px 24px; border-bottom:4px solid ${accent}; position:relative;`;
+    accentBar = `<div style="position:absolute;left:0;top:0;bottom:0;width:8px;background:${accent}"></div>`;
+    sideStyle = `background:#fff; border-left:1px solid #eee;`;
+  }
+
+  const hasMain = state.summary||state.experience.length||state.education.length||state.projects.length;
+  const hasSide = state.skills.length||state.languages.length||state.certifications.length;
+
+  const expHTML = state.experience.map(e=>`
+    <div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <strong style="font-size:${state.fontSize+1}px;color:#111;">${escHtml(e.role||'Role')}</strong>
+        <span style="font-size:${state.fontSize-1}px;color:#777;">${escHtml(e.start)}${e.end?' – '+escHtml(e.end):''}</span>
+      </div>
+      <div style="color:#555;font-size:${state.fontSize-1}px;margin-bottom:4px;">${escHtml(e.company||'Company')}</div>
+      <div style="font-size:${state.fontSize-1}px;color:#444;line-height:1.55;white-space:pre-line;">${escHtml(e.desc)}</div>
+    </div>`).join('');
+
+  const eduHTML = state.education.map(e=>`
+    <div style="margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;">
+        <strong style="font-size:${state.fontSize}px;color:#111;">${escHtml(e.degree)}${e.field?' in '+escHtml(e.field):''}</strong>
+        <span style="font-size:${state.fontSize-1}px;color:#777;">${[e.start,e.end].filter(Boolean).join(' – ')}</span>
+      </div>
+      <div style="color:#555;font-size:${state.fontSize-1}px;">${escHtml(e.school)}${e.gpa?' · '+escHtml(e.gpa):''}</div>
+    </div>`).join('');
+
+  const projHTML = state.projects.map(p=>`
+    <div style="margin-bottom:10px;">
+      <strong style="font-size:${state.fontSize}px;color:#111;">${escHtml(p.name)}</strong>
+      ${p.url?`<span style="font-size:${state.fontSize-2}px;color:${accent};margin-left:6px;">${escHtml(p.url)}</span>`:''}
+      <div style="font-size:${state.fontSize-1}px;color:#444;line-height:1.5;">${escHtml(p.desc)}</div>
+    </div>`).join('');
+
+  const skillsHTML = state.skills.map(s=>`<span style="font-size:${state.fontSize-2}px;background:rgba(0,0,0,0.07);padding:3px 8px;border-radius:4px;color:#333;margin:2px;display:inline-block;">${escHtml(s)}</span>`).join('');
+  const langHTML = state.languages.map(l=>`<div style="display:flex;justify-content:space-between;font-size:${state.fontSize-1}px;margin-bottom:5px;"><span>${escHtml(l.name)}</span><span style="color:#888;">${l.level}</span></div>`).join('');
+  const certHTML = state.certifications.map(c=>`<div style="font-size:${state.fontSize-1}px;margin-bottom:6px;"><strong>${escHtml(c.name)}</strong><div style="color:#888;">${escHtml(c.issuer)} ${c.year?'· '+escHtml(c.year):''}</div></div>`).join('');
+
+  const secTitle = (t) => `<div style="font-size:${state.fontSize-3}px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:${accent};margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid ${accent};">${t}</div>`;
+  const sideSec = (t) => `<div style="font-size:${state.fontSize-3}px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:${accent};margin-bottom:8px;">${t}</div>`;
+
+  const nameColor = tpl==='bold'? '#111' : '#fff';
+  const tagColor = tpl==='bold'? '#555' : 'rgba(255,255,255,0.8)';
+  const contactColor = tpl==='bold'? '#666' : 'rgba(255,255,255,0.85)';
+
+  return `
+  <div style="position:relative;">
+    ${accentBar}
+    <div style="${headerStyle}">
+      <h1 style="font-family:'Playfair Display',serif;font-size:${state.fontSize+14}px;font-weight:700;color:${nameColor};margin-bottom:3px;">${escHtml(fullName)}</h1>
+      ${state.title?`<div style="font-size:${state.fontSize+1}px;color:${tagColor};margin-bottom:10px;">${escHtml(state.title)}</div>`:''}
+      <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:${state.fontSize-2}px;color:${contactColor};">${contacts}</div>
+    </div>
+    <div style="display:grid;grid-template-columns:${hasSide?'2fr 1fr':'1fr'};min-height:600px;">
+      <div style="padding:26px 30px;">
+        ${state.summary?`<div style="margin-bottom:20px;">${secTitle('Summary')}<p style="font-size:${state.fontSize-1}px;color:#444;line-height:1.65;">${escHtml(state.summary)}</p></div>`:''}
+        ${expHTML?`<div style="margin-bottom:20px;">${secTitle('Experience')}${expHTML}</div>`:''}
+        ${projHTML?`<div style="margin-bottom:20px;">${secTitle('Projects')}${projHTML}</div>`:''}
+        ${eduHTML?`<div style="margin-bottom:20px;">${secTitle('Education')}${eduHTML}</div>`:''}
+        ${!hasMain?`<div style="color:#ccc;font-size:14px;margin-top:40px;text-align:center;">Fill in the form on the left to see your resume ✨</div>`:''}
+      </div>
+      ${hasSide?`<div style="${sideStyle}padding:26px 20px;">
+        ${skillsHTML?`<div style="margin-bottom:20px;">${sideSec('Skills')}<div>${skillsHTML}</div></div>`:''}
+        ${langHTML?`<div style="margin-bottom:20px;">${sideSec('Languages')}${langHTML}</div>`:''}
+        ${certHTML?`<div style="margin-bottom:20px;">${sideSec('Certifications')}${certHTML}</div>`:''}
+      </div>`:''}
+    </div>
+  </div>`;
+}
+
+function buildMinimalHTML(fullName, contacts) {
+  const accent = state.color;
+  const secTitle = (t) => `<div style="font-size:${state.fontSize-2}px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#111;margin:20px 0 10px;padding-bottom:5px;border-bottom:1px solid #ddd;">${t}</div>`;
+  const expHTML = state.experience.map(e=>`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;"><strong>${escHtml(e.role)}</strong><span style="color:#888;font-size:${state.fontSize-2}px;">${escHtml(e.start)}${e.end?' – '+escHtml(e.end):''}</span></div><div style="color:#666;font-size:${state.fontSize-1}px;">${escHtml(e.company)}</div><div style="font-size:${state.fontSize-1}px;color:#555;white-space:pre-line;">${escHtml(e.desc)}</div></div>`).join('');
+  const eduHTML = state.education.map(e=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;"><strong>${escHtml(e.degree)} ${e.field?'in '+escHtml(e.field):''}</strong><span style="color:#888;font-size:${state.fontSize-2}px;">${[e.start,e.end].filter(Boolean).join(' – ')}</span></div><div style="color:#666;font-size:${state.fontSize-1}px;">${escHtml(e.school)}${e.gpa?' · '+escHtml(e.gpa):''}</div></div>`).join('');
+  const skillsHTML = state.skills.map(s=>`<span style="font-size:${state.fontSize-1}px;color:#333;">${escHtml(s)}</span>`).join(' · ');
+  const langHTML = state.languages.map(l=>`<span style="font-size:${state.fontSize-1}px;">${escHtml(l.name)} (${l.level})</span>`).join(' · ');
+  const certHTML = state.certifications.map(c=>`<div style="font-size:${state.fontSize-1}px;margin-bottom:4px;"><strong>${escHtml(c.name)}</strong> — ${escHtml(c.issuer)} ${c.year?c.year:''}</div>`).join('');
+  const projHTML = state.projects.map(p=>`<div style="margin-bottom:8px;"><strong>${escHtml(p.name)}</strong>${p.url?` <span style="color:${accent};font-size:${state.fontSize-2}px;">${escHtml(p.url)}</span>`:''}<div style="font-size:${state.fontSize-1}px;color:#555;">${escHtml(p.desc)}</div></div>`).join('');
+  return `<div style="padding:44px 48px;font-size:${state.fontSize}px;">
+    <h1 style="font-size:${state.fontSize+12}px;font-weight:700;color:#111;letter-spacing:-1px;">${escHtml(fullName)}</h1>
+    ${state.title?`<div style="font-size:${state.fontSize+1}px;color:#666;margin-bottom:10px;">${escHtml(state.title)}</div>`:''}
+    <div style="display:flex;flex-wrap:wrap;gap:14px;font-size:${state.fontSize-2}px;color:#555;border-bottom:1px solid #ddd;padding-bottom:12px;">${contacts}</div>
+    ${state.summary?`${secTitle('Summary')}<p style="font-size:${state.fontSize-1}px;color:#444;line-height:1.65;">${escHtml(state.summary)}</p>`:''}
+    ${expHTML?`${secTitle('Experience')}${expHTML}`:''}
+    ${eduHTML?`${secTitle('Education')}${eduHTML}`:''}
+    ${skillsHTML?`${secTitle('Skills')}<p>${skillsHTML}</p>`:''}
+    ${projHTML?`${secTitle('Projects')}${projHTML}`:''}
+    ${langHTML?`${secTitle('Languages')}<p>${langHTML}</p>`:''}
+    ${certHTML?`${secTitle('Certifications')}${certHTML}`:''}
+  </div>`;
+}
+
+function downloadPDF() {
+  const el = document.getElementById('resume-preview');
+  const name = ((state.fname||'Resume')+'-'+(state.lname||'')+'-Resume').replace(/\s+/g,'-');
+  const opt = {
+    margin: 0, filename: name+'.pdf',
+    image: { type:'jpeg', quality:0.98 },
+    html2canvas: { scale:2, useCORS:true, backgroundColor:'#ffffff' },
+    jsPDF: { unit:'px', format:[794,1123], orientation:'portrait' }
+  };
+  html2pdf().set(opt).from(el).save().then(()=>{
+    const t = document.getElementById('toast');
+    t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 3000);
+  });
+}
+
+render();
+
+// ── MOBILE TAB SWITCHING ──
+function switchMobileTab(tab, el) {
+  document.querySelectorAll('.mobile-tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelector('.sidebar').classList.remove('mobile-active');
+  document.querySelector('.preview-area').classList.remove('mobile-active');
+  document.querySelector('.right-panel').classList.remove('mobile-active');
+  if (tab === 'form') document.querySelector('.sidebar').classList.add('mobile-active');
+  if (tab === 'preview') document.querySelector('.preview-area').classList.add('mobile-active');
+  if (tab === 'templates') document.querySelector('.right-panel').classList.add('mobile-active');
+  if (tab === 'preview') scalePreview();
+}
+
+// ── SCALE PREVIEW TO FIT SCREEN ──
+function scalePreview() {
+  const wrap = document.querySelector('.preview-wrap');
+  const preview = document.getElementById('resume-preview');
+  if (!wrap || !preview) return;
+  const available = wrap.offsetWidth;
+  if (available < 794) {
+    const scale = available / 794;
+    preview.style.transform = `scale(${scale})`;
+    preview.style.marginBottom = `-${794 * (1 - scale)}px`;
+    wrap.style.height = (1123 * scale) + 'px';
+  } else {
+    preview.style.transform = '';
+    wrap.style.height = '';
+  }
+}
+
+// Set initial state for mobile
+function initMobile() {
+  if (window.innerWidth <= 900) {
+    document.querySelector('.sidebar').classList.add('mobile-active');
+  }
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 900) {
+      document.querySelector('.sidebar').classList.remove('mobile-active');
+      document.querySelector('.preview-area').classList.remove('mobile-active');
+      document.querySelector('.right-panel').classList.remove('mobile-active');
+      document.getElementById('resume-preview').style.transform = '';
+    }
+  });
+}
+initMobile();
+</script>
+</body>
+</html>
